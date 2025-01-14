@@ -1,1 +1,8 @@
 venv/
+__pycache__/
+
+# Test files
+test.md
+
+# Jupyter notebooks
+*.ipynb
