@@ -1,3 +1,5 @@
+.PHONY: init run
+
 init:
 	@if [ ! -d "venv" ]; then \
 		python -m venv venv; \
