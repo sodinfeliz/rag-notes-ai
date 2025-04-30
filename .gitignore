@@ -3,6 +3,13 @@ __pycache__/
 
 # Test files
 test.md
+test/
 
 # Jupyter notebooks
 *.ipynb
+
+# Sync log file
+sync_log.json
+
+# Index file
+ragnote.index
