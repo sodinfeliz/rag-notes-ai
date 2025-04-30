@@ -11,7 +11,7 @@ SYNC_LOG_FILE = "sync_log.json"
 EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
 
 # OpenAI LLM model name
-OPENAI_MODEL_NAME = "gpt-4o-mini"
+OPENAI_MODEL_NAME = "gpt-4.1-mini"
 
 # Chunk settings
 CHUNK_SIZE = 500
