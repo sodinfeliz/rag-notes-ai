@@ -1,9 +1,11 @@
 venv/
 __pycache__/
+.DS_Store
 
 # Test files
 test.md
 test/
+tests/
 
 # Jupyter notebooks
 *.ipynb
