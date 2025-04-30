@@ -5,6 +5,7 @@ from app.services.rag_chain import get_qa_chain
 
 router = APIRouter()
 
+
 @router.post("/query")
 async def query_ragnote(req: QueryRequest):
     qa = get_qa_chain()

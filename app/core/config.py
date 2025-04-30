@@ -1,7 +1,5 @@
-from pathlib import Path
-
 # Obsidian vault directory
-VAULT_DIR = Path("./test").resolve()
+VAULT_DIR = "./tests"
 
 # Index file path & sync log file
 INDEX_FILE = "ragnote.index"
