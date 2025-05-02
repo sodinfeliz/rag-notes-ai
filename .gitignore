@@ -1,6 +1,7 @@
 venv/
 __pycache__/
 .DS_Store
+.env
 
 # Test files
 test.md
@@ -15,3 +16,6 @@ sync_log.json
 
 # Index file
 ragnote.index
+
+*.pid
+*.log
