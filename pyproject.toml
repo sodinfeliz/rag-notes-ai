@@ -1,0 +1,35 @@
+[project]
+name = "RagNoteAI"
+version = "0.1.0"
+description = "RagNoteAI is a RAG-based AI assistant for note taking."
+authors = [
+    { name="Elliot Su", email="elliot_su@innodisk.com" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+
+[tool.mypy]
+exclude = [
+    "venv/",
+    "tests/"
+]
+
+[tool.ruff]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "C",   # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+
+ignore = [
+    "E501",  # line too long, handled by black
+]
+
+[tool.ruff.lint.isort]
+force-wrap-aliases = true
+combine-as-imports = true
+known-third-party = ["fastapi", "pydantic", "starlette"]

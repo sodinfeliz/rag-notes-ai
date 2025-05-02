@@ -14,26 +14,26 @@ def get_qa_chain():
     template = """Answer the following question based on the provided context:
 
     Context: {context}
-    
+
     Question: {input}
-    
+
     Answer:"""
     prompt = ChatPromptTemplate.from_template(template)
     llm = ChatOpenAI(
         model=OPENAI_MODEL_NAME,
         # api_key="..."
     )
-    
+
     # Create the document chain
     document_chain = create_stuff_documents_chain(
         llm=llm,
         prompt=prompt
     )
-    
+
     # Create the retrieval chain
     qa = create_retrieval_chain(
         retriever=retriever,
         combine_docs_chain=document_chain
     )
-    
+
     return qa

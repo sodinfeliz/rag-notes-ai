@@ -20,13 +20,13 @@ router = APIRouter()
 @router.post("/update_index")
 async def update_index():
     if Path(SYNC_LOG_FILE).exists():
-        with open(SYNC_LOG_FILE, "r", encoding="utf-8") as f:
+        with open(SYNC_LOG_FILE, encoding="utf-8") as f:
             sync_log = json.load(f)
     else:
         sync_log = {}
 
     modified_files = []
-    for path in VAULT_DIR.rglob("*.md"):
+    for path in Path(VAULT_DIR).rglob("*.md"):
         mtime = path.stat().st_mtime
         if str(path) not in sync_log or sync_log[str(path)] != mtime:
             modified_files.append(path)
@@ -34,7 +34,7 @@ async def update_index():
 
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP
-    )   
+    )
 
     all_new_docs = []
     for file_path in modified_files:
@@ -57,7 +57,7 @@ async def update_index():
 @router.get("/status")
 async def get_status():
     return {
-        "vault_path": str(VAULT_DIR),
-        "index_path": INDEX_FILE,
+        "vault_path": Path(VAULT_DIR).resolve(),
+        "index_path": Path(INDEX_FILE).resolve(),
         "log_exists": Path(SYNC_LOG_FILE).exists()
     }

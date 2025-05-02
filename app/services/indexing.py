@@ -8,7 +8,11 @@ from app.services.embedding import get_embedding_model
 def get_vectorstore() -> FAISSVectorStore:
     embedding = get_embedding_model()
     try:
-        return FAISS.load_local(INDEX_FILE, embedding)
+        return FAISS.load_local(
+            INDEX_FILE,
+            embeddings=embedding,
+            allow_dangerous_deserialization=True
+        )
     except Exception:
         # Create a new empty FAISS index with the embedding model
         return FAISS.from_texts(
