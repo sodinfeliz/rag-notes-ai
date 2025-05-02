@@ -20,7 +20,7 @@ router = APIRouter()
 @router.post("/update_index")
 async def update_index():
     if Path(SYNC_LOG_FILE).exists():
-        with open(SYNC_LOG_FILE, "r", encoding="utf-8") as f:
+        with open(SYNC_LOG_FILE, encoding="utf-8") as f:
             sync_log = json.load(f)
     else:
         sync_log = {}
