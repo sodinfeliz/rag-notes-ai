@@ -1,20 +1,29 @@
 [project]
-name = "RagNoteAI"
+name = "rag-notes-ai"
 version = "0.1.0"
 description = "RagNoteAI is a RAG-based AI assistant for note taking."
-authors = [
-    { name="Elliot Su", email="elliot_su@innodisk.com" }
-]
+authors = [{ name="Elliot Su", email="sodinfeliz@gmail.com" }]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
+dependencies = [
+    "faiss-cpu>=1.11.0",
+    "fastapi>=0.115.12",
+    "langchain>=0.3.25",
+    "langchain-community>=0.3.23",
+    "langchain-huggingface>=0.1.2",
+    "langchain-openai>=0.3.16",
+    "sentence-transformers>=4.1.0",
+    "streamlit>=1.45.0",
+    "uvicorn>=0.34.2",
+]
 
 [tool.mypy]
 exclude = [
-    "venv/",
+    ".venv/",
     "tests/"
 ]
 
-[tool.ruff]
+[tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
