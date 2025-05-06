@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # From .env
-VAULT_DIR = os.getenv("VAULT_DIR")
+VAULT_DIR = os.getenv("VAULT_DIR") or "./tests"
 OPENAI_MODEL_NAME = os.getenv("OPENAI_MODEL_NAME")
 EMBEDDING_MODEL_NAME = os.getenv("EMBEDDING_MODEL_NAME")
 
