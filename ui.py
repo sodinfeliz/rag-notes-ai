@@ -106,15 +106,10 @@ if query:
                 })
 
                 # Display assistant message
-                with st.container():
-                    st.markdown(f"""
-                    <div class="chat-message assistant">
-                        <div class="content">
-                            {answer}
-                            {sources_html}
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                with st.chat_message("assistant"):
+                    st.write(answer)
+                    if sources_html:
+                        st.markdown(sources_html, unsafe_allow_html=True)
             else:
                 st.error(f"❌ Error {res.status_code}: {res.text}")
         except Exception as e:
