@@ -12,7 +12,28 @@ st.set_page_config(
     page_title="RagNoteAI Chat",
     page_icon="🧠",
     layout="centered",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="collapsed",
+    menu_items={
+        'Get Help': 'https://github.com/sodinfeliz/rag-notes-ai',
+        'Report a bug': 'https://github.com/sodinfeliz/rag-notes-ai/issues',
+        'About': '''
+        # RagNotesAI
+        
+        A RAG-based AI assistant for note taking, powered by:
+        - FAISS for efficient vector search
+        - LangChain for RAG pipeline
+        - Streamlit for beautiful UI
+        
+        Features:
+        - Chat with your Obsidian notes
+        - Real-time document indexing
+        - Source tracking and citations
+        
+        [GitHub Repository](https://github.com/sodinfeliz/rag-notes-ai)
+
+        ---
+        '''
+    }
 )
 
 # Custom CSS
