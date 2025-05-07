@@ -11,7 +11,7 @@ if "messages" not in st.session_state:
 st.set_page_config(
     page_title="RagNoteAI Chat",
     page_icon="🧠",
-    layout="wide"
+    layout="centered"
 )
 
 # Custom CSS
@@ -22,31 +22,6 @@ st.markdown("""
     }
     [data-testid="stSidebar"] [data-testid="stSidebarContent"] {
         width: 200px !important;
-    }
-    .stTextInput>div>div>input {
-        font-size: 16px;
-    }
-    .chat-message {
-        padding: 1.5rem;
-        border-radius: 0.5rem;
-        margin-bottom: 1rem;
-        display: flex;
-        flex-direction: column;
-    }
-    .chat-message.user {
-        background-color: #2b313e;
-    }
-    .chat-message.assistant {
-        background-color: #1a1a1a;
-    }
-    .chat-message .content {
-        display: flex;
-        flex-direction: column;
-    }
-    .chat-message .source {
-        font-size: 0.8rem;
-        color: #666;
-        margin-top: 0.5rem;
     }
 </style>
 """, unsafe_allow_html=True)
