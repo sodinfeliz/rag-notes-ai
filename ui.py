@@ -11,7 +11,8 @@ if "messages" not in st.session_state:
 st.set_page_config(
     page_title="RagNoteAI Chat",
     page_icon="🧠",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="collapsed"
 )
 
 # Custom CSS
