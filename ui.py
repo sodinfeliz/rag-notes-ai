@@ -95,7 +95,7 @@ if query:
                         source_path = metadata.get('source', None)
                         if source_path and source_path not in source_paths:
                             source_paths.add(source_path)
-                            sources_html += f"<div class='source'>📎 Source: `{source_path}`</div>"
+                            sources_html += f"* 📎 `{source_path}`\n"
 
                 # Add assistant message to chat history
                 st.session_state.messages.append({
@@ -109,7 +109,8 @@ if query:
                 with st.chat_message("assistant"):
                     st.write(answer)
                     if sources_html:
-                        st.markdown(sources_html, unsafe_allow_html=True)
+                        st.markdown("**Sources:**")
+                        st.markdown(sources_html)
             else:
                 st.error(f"❌ Error {res.status_code}: {res.text}")
         except Exception as e:
