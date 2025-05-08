@@ -18,17 +18,17 @@ st.set_page_config(
         'Report a bug': 'https://github.com/sodinfeliz/rag-notes-ai/issues',
         'About': '''
         # RagNotesAI
-        
+
         A RAG-based AI assistant for note taking, powered by:
         - FAISS for efficient vector search
         - LangChain for RAG pipeline
         - Streamlit for beautiful UI
-        
+
         Features:
         - Chat with your Obsidian notes
         - Real-time document indexing
         - Source tracking and citations
-        
+
         [GitHub Repository](https://github.com/sodinfeliz/rag-notes-ai)
 
         ---
@@ -69,7 +69,7 @@ if query:
         "content": query,
         "timestamp": datetime.now().strftime("%H:%M")
     })
-    
+
     # Display user message
     with st.chat_message("user"):
         st.write(query)
@@ -113,8 +113,8 @@ if query:
         except Exception as e:
             st.error(f"⚠️ Request failed: {e}")
 
-# Add a clear chat button in the sidebar
-with st.sidebar:
-    if st.button("Clear Chat History"):
-        st.session_state.messages = []
-        st.rerun()
+# # Add a clear chat button in the sidebar
+# with st.sidebar:
+#     if st.button("Clear Chat History"):
+#         st.session_state.messages = []
+#         st.rerun()
