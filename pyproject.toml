@@ -19,6 +19,7 @@ dependencies = [
 [dependency-groups]  # local development dependencies
 dev = [
     "ipykernel>=6.29.5",
+    "types-requests>=2.32.0.20250328",
 ]
 
 [tool.mypy]
