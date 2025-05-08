@@ -1,30 +1,80 @@
+from datetime import datetime
+
 import requests
 import streamlit as st
 
-st.set_page_config(page_title="RagNoteAI Chat", page_icon="🧠")
+# Initialize session state for chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-st.title("🧠 RagNoteAI")
+# Page config
+st.set_page_config(
+    page_title="RagNoteAI Chat",
+    page_icon="🧠",
+    layout="centered",
+    initial_sidebar_state="collapsed",
+    menu_items={
+        'Get Help': 'https://github.com/sodinfeliz/rag-notes-ai',
+        'Report a bug': 'https://github.com/sodinfeliz/rag-notes-ai/issues',
+        'About': '''
+        # RagNotesAI
+        
+        A RAG-based AI assistant for note taking, powered by:
+        - FAISS for efficient vector search
+        - LangChain for RAG pipeline
+        - Streamlit for beautiful UI
+        
+        Features:
+        - Chat with your Obsidian notes
+        - Real-time document indexing
+        - Source tracking and citations
+        
+        [GitHub Repository](https://github.com/sodinfeliz/rag-notes-ai)
+
+        ---
+        '''
+    }
+)
+
+# Custom CSS
+st.markdown("""
+<style>
+    [data-testid="stSidebar"] {
+        width: 200px !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+        width: 200px !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Title
+st.title("🧠 RagNotesAI")
 st.caption("Talk to your Obsidian notes (powered by FAISS + LangChain)")
 
-# === Update Index Button ===
-if st.button("🔄 Update Index"):
-    with st.spinner("Updating index..."):
-        try:
-            res = requests.post("http://localhost:8000/update_index")
-            if res.status_code == 200:
-                result = res.json()
-                st.success(f"✅ Index updated! {len(result['updated_files'])} files changed.")
-            else:
-                st.error(f"❌ Failed to update: {res.status_code}")
-        except Exception as e:
-            st.error(f"⚠️ Update failed: {e}")
+# Display chat messages
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.write(message["content"])
+        if message.get("sources"):
+            st.markdown(message["sources"])
 
-st.markdown("---")
+# Chat input
+query = st.chat_input("Ask me anything about your notes...")
 
-# === Query Input ===
-query = st.text_input("Ask me anything about your notes:", placeholder="e.g. What is LoRA?")
+if query:
+    # Add user message to chat history
+    st.session_state.messages.append({
+        "role": "user",
+        "content": query,
+        "timestamp": datetime.now().strftime("%H:%M")
+    })
+    
+    # Display user message
+    with st.chat_message("user"):
+        st.write(query)
 
-if st.button("Ask") and query.strip():
+    # Get AI response
     with st.spinner("Thinking..."):
         try:
             res = requests.post("http://localhost:8000/query", json={"query": query})
@@ -33,21 +83,38 @@ if st.button("Ask") and query.strip():
                 answer = data.get("answer", "")
                 source_docs = data.get("source_docs", [])
 
-                st.success("💡 Answer:")
-                st.write(answer)
-
+                # Format sources
+                sources_html = ""
                 if source_docs:
-                    st.markdown("---")
-                    st.markdown("📎 **Sources:**")
-
                     source_paths = set()
                     for doc in source_docs:
                         metadata = doc.get('metadata', {})
                         source_path = metadata.get('source', None)
                         if source_path and source_path not in source_paths:
                             source_paths.add(source_path)
-                            st.markdown(f"**{len(source_paths)}.** `{source_path}`")
+                            sources_html += f"* 📎 `{source_path}`\n"
+
+                # Add assistant message to chat history
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": answer,
+                    "sources": sources_html,
+                    "timestamp": datetime.now().strftime("%H:%M")
+                })
+
+                # Display assistant message
+                with st.chat_message("assistant"):
+                    st.write(answer)
+                    if sources_html:
+                        st.markdown("**Sources:**")
+                        st.markdown(sources_html)
             else:
                 st.error(f"❌ Error {res.status_code}: {res.text}")
         except Exception as e:
             st.error(f"⚠️ Request failed: {e}")
+
+# Add a clear chat button in the sidebar
+with st.sidebar:
+    if st.button("Clear Chat History"):
+        st.session_state.messages = []
+        st.rerun()
