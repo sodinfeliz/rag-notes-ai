@@ -3,7 +3,6 @@
 ### === Config ===
 APP_NAME := RagNotesAI
 PID_FILE := backend.pid
-LOG_FILE := backend.log
 
 ### === Tasks ===
 
@@ -25,7 +24,7 @@ run: install
 		cp .env.example .env; \
 	fi
 	@echo "🔧 Starting $(APP_NAME) backend..."
-	@nohup uv run main.py > $(LOG_FILE) 2>&1 & echo $$! > $(PID_FILE)
+	@nohup uv run main.py > /dev/null 2>&1 & echo $$! > $(PID_FILE)
 
 ui: install
 	@echo "🖥️  Starting $(APP_NAME) UI..."

@@ -20,3 +20,10 @@ CHUNK_OVERLAP = 50
 # Backend settings
 BACKEND_PORT = int(os.getenv("BACKEND_PORT", 8000))
 BACKEND_HOST = os.getenv("BACKEND_HOST", "127.0.0.1")
+DEBUG_MODE = os.getenv("DEBUG_MODE", "False").lower() == "true"
+
+# Logging settings
+LOG_FILE_NAME = "backend.log"
+LOG_FILE_PATH = os.path.join(os.getcwd(), "logs", LOG_FILE_NAME)
+LOG_FILE_BACKUP_COUNT = 10
+LOG_FILE_MAX_SIZE = 10 * 1024 * 1024  # 10MB
