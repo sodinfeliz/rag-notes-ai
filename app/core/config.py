@@ -19,3 +19,4 @@ CHUNK_OVERLAP = 50
 
 # Backend settings
 BACKEND_PORT = int(os.getenv("BACKEND_PORT", 8000))
+BACKEND_HOST = os.getenv("BACKEND_HOST", "127.0.0.1")
