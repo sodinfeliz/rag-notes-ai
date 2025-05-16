@@ -1,4 +1,5 @@
 import json
+import pickle
 from pathlib import Path
 from uuid import uuid4
 
@@ -53,6 +54,22 @@ async def update_index():
     else:
         sync_log = {}
 
+    vectorstore = get_vectorstore()
+
+    # Delete files that are no longer in the vault
+    tracked_files = set(sync_log.keys())
+    current_files = [p.name for p in Path(VAULT_DIR).rglob("*.md")]
+    deleted_files = tracked_files - set(current_files)
+    ids_to_delete = []
+
+    for file_name in deleted_files:
+        ids_to_delete.extend(sync_log[file_name]["ids"])
+        del sync_log[file_name]
+
+    if ids_to_delete:
+        vectorstore.delete(ids_to_delete)
+
+    # Add new files or modified files to the sync log
     modified_files, new_files = [], []
 
     for path in Path(VAULT_DIR).rglob("*.md"):
@@ -71,14 +88,14 @@ async def update_index():
     )
 
     all_new_docs, all_new_ids = [], []
-    vectorstore = get_vectorstore()
 
-    # Delete the modified files from the vectorstore
+    # Delete the old chunks for modified files
     for file_path in modified_files:
         file_name = file_path.name
         vectorstore.delete(sync_log[file_name]["ids"])
         sync_log[file_name]["ids"] = []
 
+    # Generate new chunks for new or modified files
     for file_path in new_files + modified_files:
         file_name = file_path.name
         chunks, ids = generate_docs_ids(file_path, splitter)
@@ -89,21 +106,28 @@ async def update_index():
 
     if all_new_docs:
         vectorstore.add_documents(documents=all_new_docs, ids=all_new_ids)
-        save_vectorstore(vectorstore)
 
+    save_vectorstore(vectorstore)
     with open(SYNC_LOG_FILE, 'w', encoding='utf-8') as f:
         json.dump(sync_log, f, ensure_ascii=False, indent=2)
 
     return {
-        "updated_files": [str(p) for p in modified_files + new_files],
+        "updated_files": [str(p.name) for p in modified_files + new_files],
+        "deleted_files": [str(p) for p in deleted_files],
         "added_chunks": len(all_new_docs),
+        "deleted_chunks": len(ids_to_delete),
     }
 
 
 @router.get("/status")
 async def get_status():
+    with open(f"{INDEX_FILE}/index.pkl", "rb") as f:
+        data = pickle.load(f)
+
+    docstore = data[0]
+
     return {
         "vault_path": Path(VAULT_DIR).resolve(),
         "index_path": Path(INDEX_FILE).resolve(),
-        "log_exists": Path(SYNC_LOG_FILE).exists()
+        "num_chunks": len(docstore._dict),
     }
