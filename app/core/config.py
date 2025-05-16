@@ -16,3 +16,6 @@ SYNC_LOG_FILE = "sync_log.json"
 # Chunk settings
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
+
+# Backend settings
+BACKEND_PORT = int(os.getenv("BACKEND_PORT", 8000))
