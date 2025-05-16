@@ -1,35 +1,35 @@
-.PHONY: init run ui start stop status
+.PHONY: uv install run ui start stop status
 
 ### === Config ===
-APP_NAME := RagNoteAI
+APP_NAME := RagNotesAI
 PID_FILE := backend.pid
-LOG_FILE := backend.log
 
 ### === Tasks ===
 
-init:
-	@if [ ! -d "venv" ]; then \
-		echo "🔧 Setting up virtual environment..."; \
-		python -m venv venv; \
-		source venv/bin/activate; \
-		pip install --upgrade pip; \
-		pip install -r requirements.txt; \
-	else \
-		echo "✅ Virtual environment already exists."; \
-	fi
+uv:  # install uv if it's not present
+	@command -v uv > /dev/null 2>&1 || { \
+		echo "🔧 Installing uv..."; \
+		curl -LsSf https://astral.sh/uv/install.sh | sh; \
+	}
 
-run:
+dev: uv
+	uv sync --dev
+
+install: uv  # install dependencies
+	uv sync --frozen
+
+run: install
 	@if [ ! -f .env ]; then \
 		echo "📝 .env not found. Creating from .env.example..."; \
 		cp .env.example .env; \
 	fi
 	@echo "🔧 Starting $(APP_NAME) backend..."
-	@nohup python main.py > $(LOG_FILE) 2>&1 & echo $$! > $(PID_FILE)
+	@nohup uv run main.py > /dev/null 2>&1 & echo $$! > $(PID_FILE)
 
-ui:
+ui: install
 	@echo "🖥️  Starting $(APP_NAME) UI..."
 	@sleep 1
-	@streamlit run ui.py
+	@uv run streamlit run ui.py
 
 start: run ui
 	@echo "🚀 $(APP_NAME) is running (backend + UI)"

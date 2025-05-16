@@ -13,6 +13,9 @@ def get_qa_chain():
     # Create a prompt template
     template = """Answer the following question based on the provided context:
 
+    - If you need to include mathematical formulas, use `$...$` for inline math and `$$...$$` for block math (not parentheses or brackets).
+    - Do not use \\( ... \\) or \\[ ... \\] for math.
+
     Context: {context}
 
     Question: {input}
