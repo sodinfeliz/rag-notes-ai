@@ -1,5 +1,4 @@
 import json
-import pickle
 from pathlib import Path
 from uuid import uuid4
 
@@ -11,7 +10,6 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter, TextSplitte
 from app.core.config import (
     CHUNK_OVERLAP,
     CHUNK_SIZE,
-    INDEX_FILE,
     SYNC_LOG_FILE,
     VAULT_DIR,
 )
@@ -116,18 +114,4 @@ async def update_index():
         "deleted_files": [str(p) for p in deleted_files],
         "added_chunks": len(all_new_docs),
         "deleted_chunks": len(ids_to_delete),
-    }
-
-
-@router.get("/status")
-async def get_status():
-    with open(f"{INDEX_FILE}/index.pkl", "rb") as f:
-        data = pickle.load(f)
-
-    docstore = data[0]
-
-    return {
-        "vault_path": Path(VAULT_DIR).resolve(),
-        "index_path": Path(INDEX_FILE).resolve(),
-        "num_chunks": len(docstore._dict),
     }

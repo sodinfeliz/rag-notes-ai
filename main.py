@@ -5,7 +5,7 @@ import socket
 import uvicorn
 from fastapi import FastAPI
 
-from app.api import index, query
+from app.api import index, query, status
 from app.core.config import BACKEND_HOST, BACKEND_PORT
 from app.core.logging_settings import LOGGING_SETTINGS
 
@@ -16,6 +16,7 @@ app = FastAPI()
 
 app.include_router(query.router)
 app.include_router(index.router)
+app.include_router(status.router)
 
 
 def is_port_in_use(port: int, host: str = "127.0.0.1") -> bool:
