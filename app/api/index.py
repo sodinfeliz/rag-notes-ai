@@ -32,10 +32,9 @@ def generate_docs_ids(
         tuple[list[Document], list[str]]: A tuple of documents and ids.
     """
     loader = TextLoader(path, encoding="utf-8")
-    rel_path = str(path.relative_to(Path(VAULT_DIR)))
 
     docs = loader.load()
-    docs[0].metadata = {"source": rel_path}
+    docs[0].metadata = {"source": path.name}
 
     # Chunks will inherit the metadata of the original document
     chunks = splitter.split_documents(docs)
