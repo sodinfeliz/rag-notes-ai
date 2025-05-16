@@ -1,6 +1,6 @@
 [project]
 name = "rag-notes-ai"
-version = "0.1.0"
+version = "0.2.0"
 description = "RagNotesAI is a RAG-based AI assistant for note taking."
 authors = [{ name="Elliot Su", email="sodinfeliz@gmail.com" }]
 readme = "README.md"
