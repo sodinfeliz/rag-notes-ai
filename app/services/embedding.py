@@ -1,7 +1,7 @@
 from langchain_huggingface import HuggingFaceEmbeddings
 
-from app.core.config import EMBEDDING_MODEL_NAME
+from app.core.settings import settings
 
 
 def get_embedding_model() -> HuggingFaceEmbeddings:
-    return HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME)
+    return HuggingFaceEmbeddings(model_name=settings.embedding_model_name)

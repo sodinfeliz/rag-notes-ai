@@ -1,9 +1,4 @@
-from app.core.config import (
-    DEBUG_MODE,
-    LOG_FILE_BACKUP_COUNT,
-    LOG_FILE_MAX_SIZE,
-    LOG_FILE_PATH,
-)
+from app.core.settings import settings
 
 LOGGING_SETTINGS = {
     "version": 1,
@@ -26,11 +21,11 @@ LOGGING_SETTINGS = {
         },
         "rotating_file": {
             "class": "logging.handlers.RotatingFileHandler",
-            "level": "DEBUG" if DEBUG_MODE else "INFO",
+            "level": "DEBUG" if settings.debug_mode else "INFO",
             "formatter": "detailed",
-            "filename": LOG_FILE_PATH,
-            "maxBytes": LOG_FILE_MAX_SIZE,
-            "backupCount": LOG_FILE_BACKUP_COUNT,
+            "filename": settings.log_file_path,
+            "maxBytes": settings.log_file_max_size,
+            "backupCount": settings.log_file_backup_count,
             "encoding": "utf-8",
         },
     },
