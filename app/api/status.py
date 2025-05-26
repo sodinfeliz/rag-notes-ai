@@ -4,20 +4,20 @@ from pathlib import Path
 
 from fastapi import APIRouter
 
-from app.core.config import INDEX_FILE, SYNC_LOG_FILE, VAULT_DIR
+from app.core.settings import settings
 
 router = APIRouter()
 
 @router.get("/status")
 async def get_status():
     status = {
-        "vault_path": str(VAULT_DIR),
-        "index_path": INDEX_FILE,
-        "log_exists": Path(SYNC_LOG_FILE).exists(),
+        "vault_path": settings.vault_dir,
+        "index_path": settings.index_file,
+        "log_exists": Path(settings.sync_log_file).exists(),
     }
 
-    if Path(SYNC_LOG_FILE).exists():
-        with open(SYNC_LOG_FILE, encoding="utf-8") as f:
+    if Path(settings.sync_log_file).exists():
+        with open(settings.sync_log_file, encoding="utf-8") as f:
             sync_log = json.load(f)
 
         note_count = len(sync_log)

@@ -3,7 +3,7 @@ from datetime import datetime
 import requests
 import streamlit as st
 
-from app.core.config import BACKEND_PORT
+from app.core.settings import settings
 
 # Initialize session state for chat history
 if "messages" not in st.session_state:
@@ -79,7 +79,7 @@ if query:
     # Get AI response
     with st.spinner("Thinking..."):
         try:
-            res = requests.post(f"http://localhost:{BACKEND_PORT}/query", json={"query": query})
+            res = requests.post(f"http://localhost:{settings.backend_port}/query", json={"query": query})
             if res.status_code == 200:
                 data = res.json()
                 answer = data.get("answer", "")

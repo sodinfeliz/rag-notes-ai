@@ -6,8 +6,8 @@ import uvicorn
 from fastapi import FastAPI
 
 from app.api import index, query, status
-from app.core.config import BACKEND_HOST, BACKEND_PORT
 from app.core.logging_settings import LOGGING_SETTINGS
+from app.core.settings import settings
 
 logging.config.dictConfig(LOGGING_SETTINGS)
 logger = logging.getLogger("RagNotesAI")
@@ -30,16 +30,16 @@ def find_available_port(port: int, host: str = "127.0.0.1") -> int:
 
 
 if __name__ == "__main__":
-    port = BACKEND_PORT
-    if is_port_in_use(port, BACKEND_HOST):
-        port = find_available_port(port, BACKEND_HOST)
+    port = settings.backend_port
+    if is_port_in_use(port, settings.backend_host):
+        port = find_available_port(port, settings.backend_host)
 
-    logger.info(f"Starting backend server on {BACKEND_HOST}:{port}.")
+    logger.info(f"Starting backend server on {settings.backend_host}:{port}.")
 
     uvicorn.run(
         "main:app",
-        host=BACKEND_HOST,
+        host=settings.backend_host,
         port=port,
-        reload=True,
+        reload=settings.debug_mode,
         reload_dirs=["app"],
     )

@@ -7,12 +7,7 @@ from langchain_community.document_loaders import TextLoader
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter, TextSplitter
 
-from app.core.config import (
-    CHUNK_OVERLAP,
-    CHUNK_SIZE,
-    SYNC_LOG_FILE,
-    VAULT_DIR,
-)
+from app.core.settings import settings
 from app.services.indexing import get_vectorstore, save_vectorstore
 
 router = APIRouter()
@@ -45,8 +40,8 @@ def generate_docs_ids(
 
 @router.post("/update_index")
 async def update_index():
-    if Path(SYNC_LOG_FILE).exists():
-        with open(SYNC_LOG_FILE, encoding="utf-8") as f:
+    if Path(settings.sync_log_file).exists():
+        with open(settings.sync_log_file, encoding="utf-8") as f:
             sync_log = json.load(f)
     else:
         sync_log = {}
@@ -55,7 +50,7 @@ async def update_index():
 
     # Delete files that are no longer in the vault
     tracked_files = set(sync_log.keys())
-    current_files = [p.name for p in Path(VAULT_DIR).rglob("*.md")]
+    current_files = [p.name for p in Path(settings.vault_dir).rglob("*.md")]
     deleted_files = tracked_files - set(current_files)
     ids_to_delete = []
 
@@ -69,7 +64,7 @@ async def update_index():
     # Add new files or modified files to the sync log
     modified_files, new_files = [], []
 
-    for path in Path(VAULT_DIR).rglob("*.md"):
+    for path in Path(settings.vault_dir).rglob("*.md"):
         mtime = path.stat().st_mtime
         file_name = path.name
 
@@ -81,7 +76,8 @@ async def update_index():
             sync_log[file_name]["mtime"] = mtime
 
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP
+        chunk_size=settings.chunk_size,
+        chunk_overlap=settings.chunk_overlap,
     )
 
     all_new_docs, all_new_ids = [], []
@@ -105,7 +101,7 @@ async def update_index():
         vectorstore.add_documents(documents=all_new_docs, ids=all_new_ids)
 
     save_vectorstore(vectorstore)
-    with open(SYNC_LOG_FILE, 'w', encoding='utf-8') as f:
+    with open(settings.sync_log_file, 'w', encoding='utf-8') as f:
         json.dump(sync_log, f, ensure_ascii=False, indent=2)
 
     return {

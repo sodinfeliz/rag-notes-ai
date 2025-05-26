@@ -3,7 +3,7 @@ from langchain.chains.retrieval import create_retrieval_chain
 from langchain.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 
-from app.core.config import OPENAI_MODEL_NAME
+from app.core.settings import settings
 from app.services.indexing import get_vectorstore
 
 
@@ -23,7 +23,7 @@ def get_qa_chain():
     Answer:"""
     prompt = ChatPromptTemplate.from_template(template)
     llm = ChatOpenAI(
-        model=OPENAI_MODEL_NAME,
+        model=settings.openai_model_name,
         # api_key="..."
     )
 
