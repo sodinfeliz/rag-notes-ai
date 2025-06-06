@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     # Backend settings
     backend_port: int = Field(default=8000)
     backend_host: str = Field(default="127.0.0.1")
+    lm_studio_port: int = 1234
     debug_mode: bool = Field(default=False)
 
     # Logging settings
