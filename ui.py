@@ -79,7 +79,13 @@ if query:
     # Get AI response
     with st.spinner("Thinking..."):
         try:
-            res = requests.post(f"http://localhost:{settings.backend_port}/query", json={"query": query})
+            res = requests.post(
+                f"http://localhost:{settings.backend_port}/query",
+                json={
+                    "query": query,
+                    "model_name": st.session_state.get("selected_model", settings.llm_model_name)
+                }
+            )
             if res.status_code == 200:
                 data = res.json()
                 answer = data.get("answer", "")
@@ -115,8 +121,30 @@ if query:
         except Exception as e:
             st.error(f"⚠️ Request failed: {e}")
 
-# # Add a clear chat button in the sidebar
-# with st.sidebar:
-#     if st.button("Clear Chat History"):
-#         st.session_state.messages = []
-#         st.rerun()
+# Fetch available models from backend
+@st.cache_data(ttl=10)
+def get_available_models():
+    try:
+        res = requests.get(f"http://localhost:{settings.backend_port}/models")
+        if res.status_code == 200:
+            return res.json().get("models", [])
+        else:
+            st.warning("Could not fetch models from backend.")
+            return []
+    except Exception as e:
+        st.warning(f"Error fetching models: {e}")
+        return []
+
+
+with st.sidebar:
+    st.header("Model Selection")
+    available_models = get_available_models()
+    if available_models:
+        selected_model = st.selectbox(
+            "Choose a model",
+            available_models,
+            index=available_models.index(st.session_state.get("selected_model", available_models[0]))
+        )
+        st.session_state["selected_model"] = selected_model
+    else:
+        st.write("No models available.")

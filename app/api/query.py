@@ -9,7 +9,7 @@ router = APIRouter()
 
 @router.post("/query")
 async def query_ragnote(req: QueryRequest):
-    qa = get_qa_chain()
+    qa = get_qa_chain(req.model_name)
     response = qa.invoke({"input": req.query})
     return {
         "answer": response["answer"],
