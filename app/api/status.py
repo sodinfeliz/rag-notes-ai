@@ -50,16 +50,41 @@ async def get_status():
 
 @router.get("/models")
 async def get_all_models():
+    lmstudio_models = []
+    ollama_models = []
+    errors = []
+
+    # Fetch from LM Studio
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(f"http://localhost:{settings.lm_studio_port}/v1/models")
             response.raise_for_status()
             data = response.json()
-            # Filter out the embedding models
-            model_ids = [
+            lmstudio_models = [
                 m["id"] for m in data.get("data", [])
                 if "embed" not in m["id"].lower() and "embedding" not in m["id"].lower()
             ]
-            return {"models": [settings.llm_model_name] + model_ids}
     except Exception as e:
-        return {"models": [settings.llm_model_name], "error": str(e)}
+        errors.append(f"LM Studio: {e}")
+
+    # Fetch from Ollama
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get("http://localhost:11434/api/tags")
+            response.raise_for_status()
+            data = response.json()
+            ollama_models = [
+                m["name"] for m in data.get("models", [])
+            ]
+    except Exception as e:
+        errors.append(f"Ollama: {e}")
+
+    # Combine and deduplicate
+    all_models = [settings.llm_model_name] + lmstudio_models + ollama_models
+    all_models = list(dict.fromkeys(all_models))  # Remove duplicates, preserve order
+
+    result = {"models": all_models}
+    if errors:
+        result["error"] = "; ".join(errors)
+
+    return result

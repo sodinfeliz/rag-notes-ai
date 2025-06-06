@@ -1,6 +1,8 @@
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain.prompts import ChatPromptTemplate
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
 
@@ -22,14 +24,18 @@ def get_qa_chain(model_name: str):
     Question: {input}
 
     Answer:"""
+
+    llm: BaseChatModel
     prompt = ChatPromptTemplate.from_template(template)
 
-    # Detect if model is from LM Studio (adjust logic as needed)
-    # Currently, all non-OpenAI models (not prefixed with "gpt-") are from LM Studio
-    # TODO: improve this logic
-    is_lm_studio = not model_name.startswith("gpt-")
+    # Currently uses the following logic to determine the model:
+    # - If the model name contains a colon, it's an Ollama model
+    # - If the model name doesn't start with "gpt-", it's an LM Studio model
+    # - Otherwise, it's an OpenAI model
 
-    if is_lm_studio:
+    if ":" in model_name:  # Ollama model
+        llm = ChatOllama(model=model_name)
+    elif not model_name.startswith("gpt-"):  # LM Studio model
         llm = ChatOpenAI(
             model=model_name,
             base_url=f"http://localhost:{settings.lm_studio_port}/v1",

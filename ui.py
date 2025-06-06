@@ -121,6 +121,7 @@ if query:
         except Exception as e:
             st.error(f"⚠️ Request failed: {e}")
 
+
 # Fetch available models from backend
 @st.cache_data(ttl=10)
 def get_available_models():
