@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     # RAG settings
     vault_dir: str = Field(default="./tests")
-    openai_model_name: str = Field(default="gpt-4.1-mini")
+    llm_model_name: str = Field(default="gpt-4.1-mini")
     embedding_model_name: str = "all-MiniLM-L6-v2"
 
     # File paths

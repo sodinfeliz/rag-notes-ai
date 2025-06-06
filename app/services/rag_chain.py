@@ -23,8 +23,8 @@ def get_qa_chain():
     Answer:"""
     prompt = ChatPromptTemplate.from_template(template)
     llm = ChatOpenAI(
-        model=settings.openai_model_name,
-        # api_key="..."
+        model=settings.llm_model_name,
+        api_key=settings.openai_api_key,
     )
 
     # Create the document chain
