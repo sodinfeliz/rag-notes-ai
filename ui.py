@@ -83,7 +83,8 @@ if query:
                 f"http://localhost:{settings.backend_port}/query",
                 json={
                     "query": query,
-                    "model_name": st.session_state.get("selected_model", settings.llm_model_name)
+                    "model_name": st.session_state.get("selected_model", settings.llm_model_name),
+                    "platform": st.session_state.get("selected_platform", "default")
                 }
             )
             if res.status_code == 200:
@@ -128,24 +129,45 @@ def get_available_models():
     try:
         res = requests.get(f"http://localhost:{settings.backend_port}/models")
         if res.status_code == 200:
-            return res.json().get("models", [])
+            data = res.json()
+            models = data.get("models", [])
+            platforms = data.get("platforms", ["unknown"] * len(models))
+            errors = data.get("errors", None)
+            return models, platforms, errors
         else:
             st.warning("Could not fetch models from backend.")
-            return []
+            return [], [], None
     except Exception as e:
         st.warning(f"Error fetching models: {e}")
-        return []
+        return [], [], None
 
 
 with st.sidebar:
     st.header("Model Selection")
-    available_models = get_available_models()
+    available_models, platforms, model_errors = get_available_models()
+    if model_errors:
+        st.warning(f"Model fetch errors: {model_errors}")
+
     if available_models:
-        selected_model = st.selectbox(
+        # Show model name with platform in dropdown
+        model_options = [f"{m} ({p})" for m, p in zip(available_models, platforms, strict=False)]
+
+        # Find the index of the selected model (by name, ignoring platform)
+        selected_model_name = st.session_state.get("selected_model", available_models[0])
+        try:
+            selected_index = available_models.index(selected_model_name)
+        except ValueError:
+            selected_index = 0
+        selected_option = st.selectbox(
             "Choose a model",
-            available_models,
-            index=available_models.index(st.session_state.get("selected_model", available_models[0]))
+            model_options,
+            index=selected_index
         )
+
+        # Extract the model name and platform from the selected option
+        selected_model = available_models[model_options.index(selected_option)]
+        selected_platform = platforms[model_options.index(selected_option)]
         st.session_state["selected_model"] = selected_model
+        st.session_state["selected_platform"] = selected_platform
     else:
         st.write("No models available.")

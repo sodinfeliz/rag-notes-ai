@@ -10,7 +10,7 @@ from app.core.settings import settings
 from app.services.indexing import get_vectorstore
 
 
-def get_qa_chain(model_name: str):
+def get_qa_chain(model_name: str, platform: str):
     retriever = get_vectorstore().as_retriever()
 
     # Create a prompt template
@@ -33,9 +33,9 @@ def get_qa_chain(model_name: str):
     # - If the model name doesn't start with "gpt-", it's an LM Studio model
     # - Otherwise, it's an OpenAI model
 
-    if ":" in model_name:  # Ollama model
+    if platform == "Ollama":
         llm = ChatOllama(model=model_name)
-    elif not model_name.startswith("gpt-"):  # LM Studio model
+    elif platform == "LM Studio":
         llm = ChatOpenAI(
             model=model_name,
             base_url=f"http://localhost:{settings.lm_studio_port}/v1",

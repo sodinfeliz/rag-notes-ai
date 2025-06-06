@@ -6,8 +6,10 @@ import httpx
 from fastapi import APIRouter
 
 from app.core.settings import settings
+from app.models.models_schema import ModelsResponse
 
 router = APIRouter()
+
 
 @router.get("/status")
 async def get_status():
@@ -48,11 +50,17 @@ async def get_status():
     return status
 
 
-@router.get("/models")
+@router.get(
+    "/models",
+    response_model=ModelsResponse,
+    summary="Get all available models",
+    description="Returns a list of all available models from LM Studio and Ollama. "
+                "The platform field indicates the source of the corresponding model.",
+)
 async def get_all_models():
     lmstudio_models = []
     ollama_models = []
-    errors = []
+    errors = {}
 
     # Fetch from LM Studio
     try:
@@ -65,7 +73,7 @@ async def get_all_models():
                 if "embed" not in m["id"].lower() and "embedding" not in m["id"].lower()
             ]
     except Exception as e:
-        errors.append(f"LM Studio: {e}")
+        errors["LM Studio"] = str(e)
 
     # Fetch from Ollama
     try:
@@ -77,14 +85,11 @@ async def get_all_models():
                 m["name"] for m in data.get("models", [])
             ]
     except Exception as e:
-        errors.append(f"Ollama: {e}")
+        errors["Ollama"] = str(e)
 
     # Combine and deduplicate
     all_models = [settings.llm_model_name] + lmstudio_models + ollama_models
     all_models = list(dict.fromkeys(all_models))  # Remove duplicates, preserve order
+    platforms = ["default"] + ["LM Studio"] * len(lmstudio_models) + ["Ollama"] * len(ollama_models)
 
-    result = {"models": all_models}
-    if errors:
-        result["error"] = "; ".join(errors)
-
-    return result
+    return ModelsResponse(models=all_models, platforms=platforms, errors=errors or None)
