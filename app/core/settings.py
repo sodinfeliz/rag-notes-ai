@@ -1,3 +1,4 @@
+import socket
 from pathlib import Path
 
 from pydantic import Field
@@ -26,7 +27,7 @@ class Settings(BaseSettings):
     chunk_overlap: int = 50
 
     # Backend settings
-    backend_port: int = Field(default=8000)
+    backend_port: int = Field(default=8600)
     backend_host: str = Field(default="127.0.0.1")
     lm_studio_port: int = 1234
     debug_mode: bool = Field(default=False)
@@ -40,6 +41,22 @@ class Settings(BaseSettings):
     def log_file_path(self) -> Path:
         return Path.cwd() / "logs" / self.log_file_name
 
+    def is_port_in_use(self, port: int, host: str) -> bool:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            return s.connect_ex((host, port)) == 0
+
+    def find_available_port(self, start_port: int, host: str) -> int:
+        while self.is_port_in_use(start_port, host):
+            start_port += 1
+        return start_port
+
+    def ensure_backend_port_available(self):
+        if self.is_port_in_use(self.backend_port, self.backend_host):
+            self.backend_port = self.find_available_port(
+                self.backend_port, self.backend_host
+            )
+
 
 # Global settings instance
 settings = Settings()
+settings.ensure_backend_port_available()

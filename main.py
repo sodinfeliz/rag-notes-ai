@@ -30,16 +30,10 @@ def find_available_port(port: int, host: str = "127.0.0.1") -> int:
 
 
 if __name__ == "__main__":
-    port = settings.backend_port
-    if is_port_in_use(port, settings.backend_host):
-        port = find_available_port(port, settings.backend_host)
-
-    logger.info(f"Starting backend server on {settings.backend_host}:{port}.")
-
     uvicorn.run(
         "main:app",
         host=settings.backend_host,
-        port=port,
+        port=settings.backend_port,
         reload=settings.debug_mode,
         reload_dirs=["app"],
     )
