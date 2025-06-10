@@ -1,6 +1,5 @@
 import logging
 import logging.config
-import socket
 
 import uvicorn
 from fastapi import FastAPI
@@ -19,17 +18,8 @@ app.include_router(index.router)
 app.include_router(status.router)
 
 
-def is_port_in_use(port: int, host: str = "127.0.0.1") -> bool:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex((host, port)) == 0
-
-def find_available_port(port: int, host: str = "127.0.0.1") -> int:
-    while is_port_in_use(port, host):
-        port += 1
-    return port
-
-
 if __name__ == "__main__":
+    settings.ensure_backend_port_available()
     uvicorn.run(
         "main:app",
         host=settings.backend_host,

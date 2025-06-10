@@ -41,22 +41,21 @@ class Settings(BaseSettings):
     def log_file_path(self) -> Path:
         return Path.cwd() / "logs" / self.log_file_name
 
-    def is_port_in_use(self, port: int, host: str) -> bool:
+    def _is_port_in_use(self, port: int, host: str) -> bool:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             return s.connect_ex((host, port)) == 0
 
-    def find_available_port(self, start_port: int, host: str) -> int:
-        while self.is_port_in_use(start_port, host):
+    def _find_available_port(self, start_port: int, host: str) -> int:
+        while self._is_port_in_use(start_port, host):
             start_port += 1
         return start_port
 
     def ensure_backend_port_available(self):
-        if self.is_port_in_use(self.backend_port, self.backend_host):
-            self.backend_port = self.find_available_port(
+        if self._is_port_in_use(self.backend_port, self.backend_host):
+            self.backend_port = self._find_available_port(
                 self.backend_port, self.backend_host
             )
 
 
 # Global settings instance
 settings = Settings()
-settings.ensure_backend_port_available()
