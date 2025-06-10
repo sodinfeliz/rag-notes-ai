@@ -38,18 +38,6 @@ st.set_page_config(
     }
 )
 
-# Custom CSS
-st.markdown("""
-<style>
-    [data-testid="stSidebar"] {
-        width: 200px !important;
-    }
-    [data-testid="stSidebar"] [data-testid="stSidebarContent"] {
-        width: 200px !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
 # Title
 st.title("🧠 RagNotesAI")
 st.caption("Talk to your Obsidian notes (powered by FAISS + LangChain)")
